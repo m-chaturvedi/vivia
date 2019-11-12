@@ -1,6 +1,11 @@
 # Root cmake file.
 cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
 
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+endif()
+
 project(visGUI)
 
 include(vgVersion.cmake)
@@ -26,6 +31,27 @@ option(VISGUI_DISABLE_FIXUP_BUNDLE  "Disable install fixup bundle utility"  OFF)
 option(BUILD_TESTING                "Build tests"                           OFF)
 option(BUILD_SDK_DOCUMENTATION      "Build SDK documentation"               OFF)
 option(BUILD_USER_DOCUMENTATION     "Build user documentation"              OFF)
+
+###
+# Look for and use Fletch to find dependencies
+#
+set( fletch_DIR "" CACHE PATH "Path to FLETCH packages" )
+if ( IS_DIRECTORY ${fletch_DIR} )
+  find_package( fletch NO_MODULE )
+  if ( fletch_FOUND )
+    # Search for libraries in the fletch install root
+    list(APPEND CMAKE_PREFIX_PATH "${fletch_ROOT}")
+  endif()
+endif()
+
+set( kwiver_DIR "" CACHE PATH "Path to KWIVER packages" )
+if ( IS_DIRECTORY ${kwiver_DIR} )
+  find_package( kwiver NO_MODULE )
+  if ( kwiver_FOUND )
+    # Search for libraries in the fletch install root
+    list(APPEND CMAKE_PREFIX_PATH "${kwiver_ROOT}")
+  endif()
+endif()
 
 # Include core CMake support code.
 include(CMake/functions.cmake)

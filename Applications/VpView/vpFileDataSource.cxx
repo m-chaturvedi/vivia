@@ -154,7 +154,7 @@ void vpFileDataSource::update()
     {
       while (!file.atEnd())
       {
-        const auto line = file.readLine();
+        const auto line = file.readLine().trimmed();
         if (line.isEmpty())
         {
           continue;
